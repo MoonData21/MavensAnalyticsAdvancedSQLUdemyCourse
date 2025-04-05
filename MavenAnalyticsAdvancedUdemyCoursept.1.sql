@@ -178,7 +178,7 @@ select 2024, country, ladder_score from happiness_scores_current;
 select year, country, happiness_score
 from happiness_scores
 where happiness_score > (select avg(happiness_score)
-							from  happiness_scores);
+			from happiness_scores);
 
 select * from happiness_scores;    
 
@@ -194,6 +194,52 @@ select year, country, happiness_score,
 	(select avg(happiness_score) from happiness_scores) as avg_hs,
 	happiness_score - (select avg(happiness_score) from happiness_scores) as diff_from_avg
 from happiness_scores;
+
+-- Assignment 1: Subqueries in the Select Clause
+-- products table
+select * from products;
+select avg(unit_price) from products;
+
+select product_id, product_name, unit_price,
+(select avg(unit_price) from products) as avg_unit_price,
+unit_price - (select avg(unit_price) from products) as diff_price
+from products
+order by unit_price desc;
+
+-- Subqueries in the From Clause
+-- Joining with a subquery
+select hs.year, hs.country, hs.happiness_score,
+country_hs.avg_hs_by_country
+from happiness_scores hs left join
+	(select country, avg(happiness_score) as avg_hs_by_country
+    from happiness_scores
+    group by country) as country_hs
+    on hs.country = country_hs.country;
+-- Using subqueries within the JOIN clause is great for speeding up queries since it allows you to join smaller tables
+
+select * from happiness_scores;
+-- average happiness score for each country
+select country, avg(happiness_score) as avg_hs_by_country
+from happiness_scores
+group by country;
+
+select hs.year, hs.country, hs.happiness_score,
+	country_hs.avg_hs_by_country
+from happiness_scores left join
+	(select country, avg(happiness_score) as avg_hs_by_country
+    from happiness_scores
+    group by country) as country_hs
+on hs.country = country_hs.country;
+
+-- View one country
+select hs.year, hs.country, hs.happiness_score,
+	country_hs.avg_hs_by_country
+from happiness_scores left join
+	(select country, avg(happiness_score) as avg_hs_by_country
+    from happiness_scores
+    group by country) as country_hs
+on hs.country = country_hs.country
+where hs.country = 'United States';
 
 
 
